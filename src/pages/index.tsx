@@ -9,6 +9,7 @@ import React, { useState } from 'react';
 import { OmniEmbed } from '@/components/OmniEmbed';
 import { OmniEmbedConfig, OmniUser } from '@/types/omni';
 import { EmbedConnectionRoles } from '@omni-co/embed';
+import Head from 'next/head';
 
 /*
  * Demo users - Edit this array to mimic real users, groups, and attributes in your Omni instance.
@@ -48,7 +49,7 @@ const DEMO_USERS: OmniUser[] = [
 // Example embed configurations
 const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
   {
-    name: 'Socials Dashboard',
+    name: 'Dashboard',
     config: {
       contentType: 'dashboard',
       // contentId: 'your-dashboard-id-here', // Replace with your actual dashboard ID
@@ -146,117 +147,126 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Omni Embed Demo
-          </h1>
-          <p className="text-gray-600">
-            This demo shows how to generate unique embed URLs for different users in your application.
-          </p>
-        </div>
+    <>
+      <Head>
+        <title>Omni Embed Demo</title>
+        <link rel="icon" type="image/png" href="/favicon.png" />
+      </Head>
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-0">
+              Omni Embed Demo
+            </h1>
+            <div className="flex flex-col items-center">
+              <a href="https://www.hawkfry.com" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center group">
+                <img src="/logo.png" alt="Hawkfry Logo" className="h-12 w-auto" />
+                <span className="text-xs text-gray-500 group-hover:underline mt-1 text-center" style={{ fontSize: '0.7rem' }}>www.hawkfry.com</span>
+              </a>
+            </div>
+          </div>
 
-        {/* User Switcher */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Current User
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {DEMO_USERS.map((user) => (
-              <button
-                key={user.externalId}
-                onClick={() => handleUserChange(user.externalId)}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  currentUser.externalId === user.externalId
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-left">
-                  <div className="font-medium text-gray-900">{user.name}</div>
-                  <div className="text-sm text-gray-500">{user.email}</div>
-                  <div className="text-xs text-gray-400 mt-1">ID: {user.externalId}</div>
-                </div>
-              </button>
-            ))}
+          {/* User Switcher */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Current User
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {DEMO_USERS.map((user) => (
+                <button
+                  key={user.externalId}
+                  onClick={() => handleUserChange(user.externalId)}
+                  className={`p-4 rounded-lg border-2 transition-all ${
+                    currentUser.externalId === user.externalId
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="text-left">
+                    <div className="font-medium text-gray-900">{user.name}</div>
+                    <div className="text-sm text-gray-500">{user.email}</div>
+                    <div className="text-xs text-gray-400 mt-1">ID: {user.externalId}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
+                <strong>Note:</strong> In a real application, user information would come from your authentication system.
+                Each user gets their own unique embed URL with their specific permissions and data access.
+              </p>
+            </div>
           </div>
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">
-              <strong>Note:</strong> In a real application, user information would come from your authentication system.
-              Each user gets their own unique embed URL with their specific permissions and data access.
-            </p>
-          </div>
-        </div>
 
-        {/* Content Selector */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Select Content
-          </h2>
-          <div className="flex flex-wrap gap-2">
-            {EMBED_CONFIGS.map((item, index) => (
-              <button
-                key={index}
-                onClick={() => handleConfigChange(index)}
-                className={`px-4 py-2 rounded-lg transition-all ${
-                  currentConfig === item.config
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {item.name}
-              </button>
-            ))}
+          {/* Content Selector */}
+          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Try an Integration
+            </h2>
+            <div className="flex flex-wrap gap-2">
+              {EMBED_CONFIGS.map((item, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleConfigChange(index)}
+                  className={`px-4 py-2 rounded-lg transition-all ${
+                    currentConfig === item.config
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {item.name}
+                </button>
+              ))}
+            </div>
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">
+                <strong>Important:</strong> Replace the contentId values in the code with your actual dashboard or workbook IDs from Omni.
+              </p>
+            </div>
           </div>
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">
-              <strong>Important:</strong> Replace the contentId values in the code with your actual dashboard or workbook IDs from Omni.
-            </p>
-          </div>
-        </div>
 
-        {/* Embed Display */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Embedded Analytics
-          </h2>
-          <div className="border border-gray-200 rounded-lg overflow-hidden" style={{ height: '600px' }}>
-            <OmniEmbed
-              key={embedKey}
-              config={{
-                ...currentConfig,
-                connectionRoles: USER_CONNECTION_ROLES[currentUser.externalId] || {},
-              }}
-              user={currentUser}
-              className="w-full h-full"
-              onLoad={() => console.log('Embed loaded successfully')}
-              onError={(error) => console.error('Embed error:', error)}
-            />
+          {/* Embed Display */}
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Embedded Analytics
+            </h2>
+            <div className="border border-gray-200 rounded-lg overflow-hidden" style={{ height: '600px' }}>
+              <OmniEmbed
+                key={embedKey}
+                config={{
+                  ...currentConfig,
+                  connectionRoles: USER_CONNECTION_ROLES[currentUser.externalId] || {},
+                }}
+                user={currentUser}
+                className="w-full h-full"
+                onLoad={() => console.log('Embed loaded successfully')}
+                onError={(error) => console.error('Embed error:', error)}
+              />
+            </div>
           </div>
-        </div>
 
-        {/* Implementation Guide */}
-        <div className="mt-8 bg-blue-50 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">
-            Implementation Guide
-          </h3>
-          <div className="space-y-3 text-sm text-gray-700">
-            <p>
-              <strong>1. User Authentication:</strong> When a user logs into your app, use their information to create the embed URL.
-            </p>
-            <p>
-              <strong>2. Unique URLs:</strong> Each user gets a unique, signed URL that includes their permissions and data access.
-            </p>
-            <p>
-              <strong>3. Security:</strong> The embed URL is generated server-side using your Omni secret, ensuring security.
-            </p>
-            <p>
-              <strong>4. User Attributes:</strong> Pass additional attributes (department, role, etc.) to filter data in Omni.
-            </p>
+          {/* Implementation Guide */}
+          <div className="mt-8 bg-blue-50 rounded-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              Implementation Guide
+            </h3>
+            <div className="space-y-3 text-sm text-gray-700">
+              <p>
+                <strong>1. User Authentication:</strong> When a user logs into your app, use their information to create the embed URL.
+              </p>
+              <p>
+                <strong>2. Unique URLs:</strong> Each user gets a unique, signed URL that includes their permissions and data access.
+              </p>
+              <p>
+                <strong>3. Security:</strong> The embed URL is generated server-side using your Omni secret, ensuring security.
+              </p>
+              <p>
+                <strong>4. User Attributes:</strong> Pass additional attributes (department, role, etc.) to filter data in Omni.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 } 

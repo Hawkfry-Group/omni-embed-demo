@@ -252,3 +252,9 @@ Feel free to submit issues and enhancement requests!
 ## 📄 License
 
 MIT 
+
+## App Screenshot
+
+<img src="public/screenshot.png" alt="App Screenshot" width="800" />
+
+*The front page of the Omni Embed Demo app with custom branding.* 
