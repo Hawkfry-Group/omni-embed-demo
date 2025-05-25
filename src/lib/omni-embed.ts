@@ -73,6 +73,12 @@ export async function generateEmbedUrl(config: EmbedConfig): Promise<string> {
     throw new Error('Either OMNI_ORGANIZATION_NAME or OMNI_HOST must be set');
   }
 
+  // Map string mode to enum if needed
+  let mode = config.mode;
+  if (mode === 'APPLICATION') {
+    mode = EmbedSessionMode.Application;
+  }
+
   const baseConfig = {
     externalId: config.externalId,
     name: config.name,
@@ -85,7 +91,7 @@ export async function generateEmbedUrl(config: EmbedConfig): Promise<string> {
     filterSearchParam: config.filterSearchParam,
     userAttributes: config.userAttributes,
     connectionRoles: config.connectionRoles,
-    mode: config.mode || EmbedSessionMode.SingleContent,
+    mode: mode || EmbedSessionMode.SingleContent,
     linkAccess: config.linkAccess,
     groups: config.groups,
     accessBoost: config.accessBoost,

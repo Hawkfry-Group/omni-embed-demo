@@ -76,6 +76,27 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
       prefersDark: 'true'
     },
   },
+  // Full navigation embed always requires a contentId and starts on that dashboard/workbook, not the Hub (Current Omni SDK limitation)
+  {
+    name: 'Full Omni Navigation',
+    config: {
+      contentType: 'navigation', // Custom type for navigation embedding
+      contentId: '68fde74b', // Use any valid dashboard ID for demo
+      mode: 'APPLICATION', // Will be mapped to EmbedSessionMode.Application in backend
+      theme: 'dawn',
+      prefersDark: 'system'
+    },
+  },
+  // Hub (Home Page) demo config (official way per Omni docs)
+  {
+    name: 'Omni Hub (Home Page)',
+    config: {
+      contentType: 'content-discovery', // Official way to land on the hub page
+      path: 'root', // This lands on the Hub page
+      theme: 'dawn',
+      prefersDark: 'system'
+    },
+  },
 ];
 
 // Map user externalId to their connection roles

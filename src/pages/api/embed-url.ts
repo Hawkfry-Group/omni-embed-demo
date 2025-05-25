@@ -9,6 +9,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { generateEmbedUrl } from '@/lib/omni-embed';
 import { OmniEmbedConfig, OmniUser, OmniError } from '@/types/omni';
+import { EmbedSessionMode } from '@omni-co/embed';
 
 type SuccessResponse = {
   success: true;
@@ -44,7 +45,7 @@ export default async function handler(
     };
 
     // Validate required fields
-    if (!config || !config.contentId) {
+    if (!config || (!config.contentId && config.contentType !== 'content-discovery')) {
       return res.status(400).json({
         success: false,
         error: {
@@ -65,22 +66,62 @@ export default async function handler(
     }
 
     // Generate signed URL using the SDK
-    const url = await generateEmbedUrl({
-      contentId: config.contentId,
-      contentType: config.contentType || 'dashboard',
-      externalId: user.externalId,
-      name: user.name || user.externalId,
-      email: user.email,
-      entity: user.attributes?.entity as string | undefined,
-      theme: config.theme,
-      prefersDark: config.prefersDark,
-      filterSearchParam: config.filterSearchParam,
-      userAttributes: user.attributes,
-      linkAccess: config.linkAccess,
-      accessBoost: config.accessBoost,
-      customTheme: config.customTheme,
-      customThemeId: config.customThemeId,
-    });
+    let url: string;
+    if (config.contentType === 'navigation') {
+      // Navigation demo: embed full app navigation
+      url = await generateEmbedUrl({
+        contentId: config.contentId,
+        contentType: 'dashboard', // Use dashboard for SDK, but set mode
+        externalId: user.externalId,
+        name: user.name || user.externalId,
+        email: user.email,
+        entity: user.attributes?.entity as string | undefined,
+        theme: config.theme,
+        prefersDark: config.prefersDark,
+        filterSearchParam: config.filterSearchParam,
+        userAttributes: user.attributes,
+        linkAccess: config.linkAccess,
+        accessBoost: config.accessBoost,
+        customTheme: config.customTheme,
+        customThemeId: config.customThemeId,
+        mode: EmbedSessionMode.Application, // Use enum value for type safety
+      });
+    } else if (config.contentType === 'content-discovery') {
+      // Hub (Home Page) demo: embed content discovery at root
+      url = await generateEmbedUrl({
+        contentType: 'content-discovery',
+        path: typeof config.path === 'string' ? config.path : 'root',
+        externalId: user.externalId,
+        name: user.name || user.externalId,
+        email: user.email,
+        entity: typeof user.attributes?.entity === 'string' ? user.attributes.entity : undefined,
+        theme: config.theme,
+        prefersDark: config.prefersDark,
+        filterSearchParam: config.filterSearchParam,
+        userAttributes: user.attributes,
+        linkAccess: config.linkAccess,
+        accessBoost: config.accessBoost,
+        customTheme: config.customTheme,
+        customThemeId: config.customThemeId,
+      });
+    } else {
+      url = await generateEmbedUrl({
+        contentId: config.contentId,
+        contentType: config.contentType || 'dashboard',
+        externalId: user.externalId,
+        name: user.name || user.externalId,
+        email: user.email,
+        entity: user.attributes?.entity as string | undefined,
+        theme: config.theme,
+        prefersDark: config.prefersDark,
+        filterSearchParam: config.filterSearchParam,
+        userAttributes: user.attributes,
+        linkAccess: config.linkAccess,
+        accessBoost: config.accessBoost,
+        customTheme: config.customTheme,
+        customThemeId: config.customThemeId,
+      });
+    }
 
     return res.status(200).json({
       success: true,
