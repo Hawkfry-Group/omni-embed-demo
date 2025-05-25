@@ -1,0 +1,37 @@
+/* globals.css
+ *
+ * This file contains global Tailwind CSS styles for the Omni Embed Demo app.
+ * Intended for demo/instructional use. See README for setup and usage instructions.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 font-medium;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-md p-6;
+  }
+
+  .embed-container {
+    @apply w-full h-full min-h-[600px] rounded-lg overflow-hidden shadow-lg;
+  }
+} 
