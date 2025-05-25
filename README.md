@@ -200,6 +200,46 @@ const DEMO_USERS: OmniUser[] = [
   // Add more users as needed
 ];
 ```
+
+## 🧭 Using Your Own Navigation Bar for Omni Content
+
+**Use case:**
+You have your own navigation bar (sidebar, topbar, etc.) and want users to navigate Omni folders or content using your UI, not Omni's built-in navigation.
+
+**How it works:**
+- Render your navigation bar in your app, outside the Omni iframe.
+- When a user clicks a folder or content in your nav, update the Omni embed config to show the desired folder/content using a content-discovery embed.
+- (Optional) Use postMessage for advanced navigation inside the iframe.
+
+**Example:**
+```jsx
+// Pseudocode for a sidebar nav that lets users pick folders
+function App() {
+  const [omniConfig, setOmniConfig] = useState({
+    contentType: 'content-discovery',
+    path: 'root', // Start at Hub
+    // ...other config
+  });
+
+  function handleFolderClick(folderPath) {
+    setOmniConfig(cfg => ({
+      ...cfg,
+      contentType: 'content-discovery',
+      path: folderPath, // e.g., 'entity-folder' or a specific folder path
+    }));
+  }
+
+  return (
+    <div className="layout">
+      <Sidebar onFolderClick={handleFolderClick} />
+      <OmniEmbed config={omniConfig} user={currentUser} />
+    </div>
+  );
+}
+```
+- Use `path: 'root'` for the Hub, `'my'` for My Content, or `'entity-folder'` for an entity folder.
+- For advanced navigation (e.g., drill into dashboards), you can use the [postMessage API](https://docs.omni.co/docs/embed/external-embedding/customization-and-interactivity). 
+
 ## 📖 Resources
 
 - [Omni Embed SDK Documentation](https://www.npmjs.com/package/@omni-co/embed)
