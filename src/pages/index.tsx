@@ -75,6 +75,15 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
       customThemeId: '232250d4-cc11-4dff-97a4-cc4298f2f3f1',
       accessBoost: true, // Enable access boost for this dashboard
       prefersDark: 'true'
+      // ,customTheme: {
+      //   "dashboard-background": "#2563eb",
+      //   "dashboard-tile-title-font-family": "url(https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.ttf)",
+      //   "dashboard-tile-subtitle-font-family": "url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.ttf)",
+      //   "dashboard-tile-value-font-family": "url(https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.ttf)",
+      //   "dashboard-tile-title-font-size": "16px",
+      //   "dashboard-tile-subtitle-font-size": "14px",
+      //   "dashboard-tile-value-font-size": "24px"
+      // }
     },
   },
   // Full navigation embed always requires a contentId and starts on that dashboard/workbook, not the Hub (Current Omni SDK limitation)
