@@ -75,7 +75,7 @@ export default async function handler(
         externalId: user.externalId,
         name: user.name || user.externalId,
         email: user.email,
-        entity: user.attributes?.entity as string | undefined,
+        entity: typeof user.attributes?.entity === 'string' ? user.attributes.entity : undefined,
         theme: config.theme,
         prefersDark: config.prefersDark,
         filterSearchParam: config.filterSearchParam,
@@ -111,7 +111,7 @@ export default async function handler(
         externalId: user.externalId,
         name: user.name || user.externalId,
         email: user.email,
-        entity: user.attributes?.entity as string | undefined,
+        entity: typeof user.attributes?.entity === 'string' ? user.attributes.entity : undefined,
         theme: config.theme,
         prefersDark: config.prefersDark,
         filterSearchParam: config.filterSearchParam,
@@ -120,6 +120,7 @@ export default async function handler(
         accessBoost: config.accessBoost,
         customTheme: config.customTheme,
         customThemeId: config.customThemeId,
+        mode: config.mode === 'APPLICATION' ? EmbedSessionMode.Application : undefined,
       });
     }
 

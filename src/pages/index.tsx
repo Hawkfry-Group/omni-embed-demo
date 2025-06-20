@@ -67,6 +67,14 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     },
   },
   {
+    name: 'Application',
+    config: {
+      contentType: 'workbook',
+      contentId: 'ee1eb1a6', // Same workbook, but in application mode
+      mode: 'APPLICATION',
+    },
+  },
+  {
     name: 'Custom Theme Dashboard',
     config: {
       contentType: 'dashboard',
