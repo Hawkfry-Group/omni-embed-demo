@@ -8,7 +8,10 @@
 import React, { useState } from 'react';
 import { OmniEmbed } from '@/components/OmniEmbed';
 import { OmniEmbedConfig, OmniUser } from '@/types/omni';
-import { EmbedConnectionRoles } from '@omni-co/embed';
+import {
+  EmbedConnectionRoles,
+  EmbedSessionMode,
+} from '@omni-co/embed';
 import Head from 'next/head';
 import {
   DASHBOARD_ID,
@@ -76,7 +79,7 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     config: {
       contentType: 'workbook',
       contentId: WORKBOOK_ID, // Same workbook, but in application mode
-      mode: 'APPLICATION',
+      mode: EmbedSessionMode.Application,
     },
   },
   {
@@ -104,7 +107,7 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     config: {
       contentType: 'navigation', // Custom type for navigation embedding
       contentId: DASHBOARD_ID, // Use any valid dashboard ID for demo
-      mode: 'APPLICATION', // Will be mapped to EmbedSessionMode.Application in backend
+      mode: EmbedSessionMode.Application,
       theme: 'dawn',
       prefersDark: 'system'
     },
@@ -214,8 +217,8 @@ export default function Home() {
             </div>
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600">
-                <strong>Note:</strong> In a real application, user information would come from your authentication system.
-                Each user gets their own unique embed URL with their specific permissions and data access.
+                <strong>Local demo only:</strong> These users and permissions are selected by the browser and are not authenticated.
+                A production app must derive this data from trusted server-side identity and authorization.
               </p>
             </div>
           </div>

@@ -1,27 +1,34 @@
-/*
- * This file is the SDK wrapper utility for generating signed Omni embed URLs.
- * It is used by the API route (api/embed-url.ts) to securely generate signed URLs using environment variables and the Omni SDK.
- * All sensitive logic and secrets are kept server-side in this module.
- * See the README section 'How the Main Files Work Together' for an overview of the architecture and data flow.
- * NOTE: The Omni SDK's type definitions for host/organizationName are strict and cause linter errors.
- * We always provide either host or organizationName, but TypeScript cannot infer this. These errors are safe to ignore.
- */
-
-import { 
-  embedSsoDashboard, 
-  embedSsoWorkbook, 
+import {
   embedSsoContentDiscovery,
-  EmbedConnectionRoles, 
+  embedSsoDashboard,
+  embedSsoWorkbook,
+  EmbedConnectionRoles,
+  EmbedEntityFolderContentRoles,
   EmbedSessionMode,
-  EmbedEntityFolderContentRoles
+  type CustomThemeProperties,
+  type EmbedSsoDashboardProps,
+  type EmbedUiSettingsObject,
 } from '@omni-co/embed';
 
-// Re-export types for convenience
-export { 
-  EmbedConnectionRoles, 
-  EmbedSessionMode, 
-  EmbedEntityFolderContentRoles
+export {
+  EmbedConnectionRoles,
+  EmbedEntityFolderContentRoles,
+  EmbedSessionMode,
 };
+
+/**
+ * Omni v1 payloads require an `exp` claim, so this demo explicitly emits one
+ * five minutes after signing instead of using the SDK's 24-hour default. The
+ * pinned SDK documentation notes that Omni does not currently guarantee
+ * server-side rejection after `exp`; do not treat this as replay prevention.
+ */
+export const EMBED_URL_EXPIRES_IN_SECONDS = 5 * 60;
+
+const HOSTNAME_PATTERN = /^(?=.{1,253}$)[a-z\d](?:[a-z\d-]{0,61}[a-z\d])?(?:\.[a-z\d](?:[a-z\d-]{0,61}[a-z\d])?)*$/i;
+const INVALID_HOST_MESSAGE = 'OMNI_HOST must be a bare hostname without protocol, port, path, query, fragment, or credentials';
+
+type UserAttributes = NonNullable<EmbedSsoDashboardProps['userAttributes']>;
+type ConnectionRoles = NonNullable<EmbedSsoDashboardProps['connectionRoles']>;
 
 interface BaseEmbedConfig {
   externalId: string;
@@ -32,20 +39,20 @@ interface BaseEmbedConfig {
   theme?: 'dawn' | 'vibes' | 'breeze' | 'blank';
   prefersDark?: 'true' | 'false' | 'system';
   filterSearchParam?: string;
-  userAttributes?: Record<string, string | string[] | number | number[]>;
-  connectionRoles?: Record<string, EmbedConnectionRoles>;
+  userAttributes?: UserAttributes;
+  connectionRoles?: ConnectionRoles;
   mode?: EmbedSessionMode;
   linkAccess?: string;
   groups?: string[];
-  accessBoost?: boolean;
-  customTheme?: Record<string, any>;
+  customTheme?: CustomThemeProperties;
   customThemeId?: string;
-  uiSettings?: Record<string, boolean>;
+  uiSettings?: EmbedUiSettingsObject;
 }
 
 interface DashboardEmbedConfig extends BaseEmbedConfig {
   contentType: 'dashboard';
   contentId: string;
+  accessBoost?: boolean;
 }
 
 interface WorkbookEmbedConfig extends BaseEmbedConfig {
@@ -58,9 +65,12 @@ interface ContentDiscoveryEmbedConfig extends BaseEmbedConfig {
   path: string;
 }
 
-export type EmbedConfig = DashboardEmbedConfig | WorkbookEmbedConfig | ContentDiscoveryEmbedConfig;
+export type EmbedConfig =
+  | DashboardEmbedConfig
+  | WorkbookEmbedConfig
+  | ContentDiscoveryEmbedConfig;
 
-export async function generateEmbedUrl(config: EmbedConfig): Promise<string> {
+function getEnvironmentConfig() {
   const secret = process.env.OMNI_SECRET;
   const organizationName = process.env.OMNI_ORGANIZATION_NAME;
   const host = process.env.OMNI_HOST;
@@ -69,16 +79,35 @@ export async function generateEmbedUrl(config: EmbedConfig): Promise<string> {
     throw new Error('OMNI_SECRET environment variable is not set');
   }
 
+  if (secret.length !== 32) {
+    throw new Error('OMNI_SECRET must be exactly 32 characters');
+  }
+
   if (!organizationName && !host) {
     throw new Error('Either OMNI_ORGANIZATION_NAME or OMNI_HOST must be set');
   }
 
-  // Map string mode to enum if needed
-  let mode = config.mode;
-  if (mode === 'APPLICATION') {
-    mode = EmbedSessionMode.Application;
+  if (organizationName && host) {
+    throw new Error('Only one of OMNI_ORGANIZATION_NAME or OMNI_HOST may be set');
   }
 
+  if (host) {
+    const normalizedHost = host.trim();
+    if (!HOSTNAME_PATTERN.test(normalizedHost)) {
+      throw new Error(INVALID_HOST_MESSAGE);
+    }
+
+    return { secret, target: { host: normalizedHost } };
+  }
+
+  return {
+    secret,
+    target: { organizationName: organizationName! },
+  };
+}
+
+export async function generateEmbedUrl(config: EmbedConfig): Promise<string> {
+  const { secret, target } = getEnvironmentConfig();
   const baseConfig = {
     externalId: config.externalId,
     name: config.name,
@@ -91,39 +120,34 @@ export async function generateEmbedUrl(config: EmbedConfig): Promise<string> {
     filterSearchParam: config.filterSearchParam,
     userAttributes: config.userAttributes,
     connectionRoles: config.connectionRoles,
-    mode: mode || EmbedSessionMode.SingleContent,
+    mode: config.mode ?? EmbedSessionMode.SingleContent,
     linkAccess: config.linkAccess,
     groups: config.groups,
-    accessBoost: config.accessBoost,
     customTheme: config.customTheme,
     customThemeId: config.customThemeId,
     uiSettings: config.uiSettings,
-    ...(host ? { host } : { organizationName }),
+    expiresIn: EMBED_URL_EXPIRES_IN_SECONDS,
+    ...target,
   };
 
-  // Use the appropriate SDK function based on content type
   switch (config.contentType) {
     case 'workbook':
-      // @ts-expect-error: host/organizationName type is stricter than runtime usage
-      return await embedSsoWorkbook({
+      return embedSsoWorkbook({
         ...baseConfig,
         contentId: config.contentId,
       });
-    
+
     case 'content-discovery':
-      // @ts-expect-error: host/organizationName type is stricter than runtime usage
-      return await embedSsoContentDiscovery({
+      return embedSsoContentDiscovery({
         ...baseConfig,
         path: config.path,
-        connectionRoles: baseConfig.connectionRoles || {},
       });
-    
+
     case 'dashboard':
-    default:
-      // @ts-expect-error: host/organizationName type is stricter than runtime usage
-      return await embedSsoDashboard({
+      return embedSsoDashboard({
         ...baseConfig,
         contentId: config.contentId,
+        accessBoost: config.accessBoost,
       });
   }
-} 
+}

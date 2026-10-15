@@ -1,21 +1,32 @@
-/*
- * This file defines TypeScript types for user, config, and error objects used throughout the app for type safety.
- * It is referenced by the main page, embed component, and API route as described in the README section 'How the Main Files Work Together'.
- */
+import type {
+  CustomThemeProperties,
+  EmbedEntityFolderContentRoles,
+  EmbedSessionMode,
+  EmbedSsoDashboardProps,
+  EmbedUiSettingsObject,
+} from '@omni-co/embed';
+
+export type OmniUserAttributes = NonNullable<
+  EmbedSsoDashboardProps['userAttributes']
+>;
+
 export interface OmniEmbedConfig {
   contentId?: string;
   contentType?: 'dashboard' | 'workbook' | 'navigation' | 'content-discovery';
-  /** Controls navigation embedding: 'APPLICATION' for full app navigation, 'SINGLE_CONTENT' (default) for single dashboard/workbook. */
-  mode?: string;
+  /** Application mode exposes Omni navigation; single-content mode is the default. */
+  mode?: EmbedSessionMode;
   theme?: 'dawn' | 'vibes' | 'breeze' | 'blank';
   prefersDark?: 'true' | 'false' | 'system';
   filterSearchParam?: string;
   linkAccess?: string;
   accessBoost?: boolean;
-  customTheme?: Record<string, any>;
+  customTheme?: CustomThemeProperties;
   customThemeId?: string;
-  connectionRoles?: Record<string, any>;
-  /** For content-discovery embeds, path is required and must be a string (e.g. 'root' for Hub page) */
+  connectionRoles?: EmbedSsoDashboardProps['connectionRoles'];
+  entityFolderContentRole?: EmbedEntityFolderContentRoles;
+  groups?: string[];
+  uiSettings?: EmbedUiSettingsObject;
+  /** Content-discovery path, such as `root` for the Hub page. */
   path?: string;
 }
 
@@ -23,11 +34,11 @@ export interface OmniUser {
   externalId: string;
   name?: string;
   email?: string;
-  attributes?: Record<string, any>;
+  attributes?: OmniUserAttributes;
 }
 
 export interface OmniError {
   code: string;
   message: string;
-  details?: any;
-} 
+  details?: unknown;
+}
