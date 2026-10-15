@@ -9,7 +9,6 @@ import React, { useState } from 'react';
 import { OmniEmbed } from '@/components/OmniEmbed';
 import { OmniEmbedConfig, OmniUser } from '@/types/omni';
 import {
-  CustomThemeProperty,
   EmbedConnectionRoles,
   EmbedSessionMode,
 } from '@omni-co/embed';
@@ -19,6 +18,7 @@ import {
   WORKBOOK_ID,
   CUSTOM_THEME_DASHBOARD_ID,
   CONNECTION_ID,
+  CUSTOM_THEME_ID,
 } from '@/config/demo-ids';
 
 /*
@@ -87,17 +87,19 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     config: {
       contentType: 'dashboard',
       contentId: CUSTOM_THEME_DASHBOARD_ID,
+      customThemeId: CUSTOM_THEME_ID, // Option 1: reference a saved theme by ID (Admin > Themes)
       accessBoost: true, // Enable access boost for this dashboard
-      prefersDark: 'false',
-      customTheme: {
-        [CustomThemeProperty.DASHBOARD_BACKGROUND]: '#eff6ff',
-        [CustomThemeProperty.DASHBOARD_TILE_BACKGROUND]: '#ffffff',
-        [CustomThemeProperty.DASHBOARD_TILE_BORDER_COLOR]: '#bfdbfe',
-        [CustomThemeProperty.DASHBOARD_TILE_BORDER_RADIUS]: '12px',
-        [CustomThemeProperty.DASHBOARD_TILE_TITLE_TEXT_COLOR]: '#1d4ed8',
-        [CustomThemeProperty.DASHBOARD_KEY_COLOR]: '#2563eb',
-        [CustomThemeProperty.DASHBOARD_KEY_TEXT_COLOR]: '#ffffff',
-      },
+      prefersDark: 'true'
+      // Option 2: define the theme inline instead of using an ID (remove customThemeId above and import CustomThemeProperty from '@omni-co/embed')
+      // ,customTheme: {
+      //   [CustomThemeProperty.DASHBOARD_BACKGROUND]: '#eff6ff',
+      //   [CustomThemeProperty.DASHBOARD_TILE_BACKGROUND]: '#ffffff',
+      //   [CustomThemeProperty.DASHBOARD_TILE_BORDER_COLOR]: '#bfdbfe',
+      //   [CustomThemeProperty.DASHBOARD_TILE_BORDER_RADIUS]: '12px',
+      //   [CustomThemeProperty.DASHBOARD_TILE_TITLE_TEXT_COLOR]: '#1d4ed8',
+      //   [CustomThemeProperty.DASHBOARD_KEY_COLOR]: '#2563eb',
+      //   [CustomThemeProperty.DASHBOARD_KEY_TEXT_COLOR]: '#ffffff',
+      // }
     },
   },
   // Full navigation embed always requires a contentId and starts on that dashboard/workbook, not the Hub (Current Omni SDK limitation)
