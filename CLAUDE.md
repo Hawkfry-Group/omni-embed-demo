@@ -67,9 +67,9 @@ The app supports these embed modes via `contentType`:
 - `.env` files are gitignored; never commit secrets
 - API routes have security headers (nosniff, DENY framing, XSS protection) via `next.config.js`
 
-## Known TypeScript Quirks
+## SDK signing
 
-The Omni SDK requires either `host` or `organizationName` but TypeScript can't infer the conditional. The codebase uses `@ts-expect-error` comments in `lib/omni-embed.ts` for the SDK calls — these are intentional and safe.
+The app pins `@omni-co/embed` 1.1.0 and uses its v1 signers. `lib/omni-embed.ts` narrows the mutually exclusive `host`/`organizationName` environment paths without TypeScript suppressions and sets a five-minute URL expiry.
 
 ## Agents
 
@@ -84,4 +84,4 @@ Two documentation agents are available in `.claude/agents/` for looking up Omni 
 - React 18
 - TypeScript (strict mode)
 - Tailwind CSS 3
-- `@omni-co/embed` SDK ^0.10.0
+- `@omni-co/embed` SDK 1.1.0

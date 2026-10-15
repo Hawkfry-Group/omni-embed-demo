@@ -8,14 +8,17 @@
 import React, { useState } from 'react';
 import { OmniEmbed } from '@/components/OmniEmbed';
 import { OmniEmbedConfig, OmniUser } from '@/types/omni';
-import { EmbedConnectionRoles } from '@omni-co/embed';
+import {
+  CustomThemeProperty,
+  EmbedConnectionRoles,
+  EmbedSessionMode,
+} from '@omni-co/embed';
 import Head from 'next/head';
 import {
   DASHBOARD_ID,
   WORKBOOK_ID,
   CUSTOM_THEME_DASHBOARD_ID,
   CONNECTION_ID,
-  CUSTOM_THEME_ID,
 } from '@/config/demo-ids';
 
 /*
@@ -76,7 +79,7 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     config: {
       contentType: 'workbook',
       contentId: WORKBOOK_ID, // Same workbook, but in application mode
-      mode: 'APPLICATION',
+      mode: EmbedSessionMode.Application,
     },
   },
   {
@@ -84,18 +87,17 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     config: {
       contentType: 'dashboard',
       contentId: CUSTOM_THEME_DASHBOARD_ID,
-      customThemeId: CUSTOM_THEME_ID,
       accessBoost: true, // Enable access boost for this dashboard
-      prefersDark: 'true'
-      // ,customTheme: {
-      //   "dashboard-background": "#2563eb",
-      //   "dashboard-tile-title-font-family": "url(https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.ttf)",
-      //   "dashboard-tile-subtitle-font-family": "url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.ttf)",
-      //   "dashboard-tile-value-font-family": "url(https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.ttf)",
-      //   "dashboard-tile-title-font-size": "16px",
-      //   "dashboard-tile-subtitle-font-size": "14px",
-      //   "dashboard-tile-value-font-size": "24px"
-      // }
+      prefersDark: 'false',
+      customTheme: {
+        [CustomThemeProperty.DASHBOARD_BACKGROUND]: '#eff6ff',
+        [CustomThemeProperty.DASHBOARD_TILE_BACKGROUND]: '#ffffff',
+        [CustomThemeProperty.DASHBOARD_TILE_BORDER_COLOR]: '#bfdbfe',
+        [CustomThemeProperty.DASHBOARD_TILE_BORDER_RADIUS]: '12px',
+        [CustomThemeProperty.DASHBOARD_TILE_TITLE_TEXT_COLOR]: '#1d4ed8',
+        [CustomThemeProperty.DASHBOARD_KEY_COLOR]: '#2563eb',
+        [CustomThemeProperty.DASHBOARD_KEY_TEXT_COLOR]: '#ffffff',
+      },
     },
   },
   // Full navigation embed always requires a contentId and starts on that dashboard/workbook, not the Hub (Current Omni SDK limitation)
@@ -104,7 +106,7 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     config: {
       contentType: 'navigation', // Custom type for navigation embedding
       contentId: DASHBOARD_ID, // Use any valid dashboard ID for demo
-      mode: 'APPLICATION', // Will be mapped to EmbedSessionMode.Application in backend
+      mode: EmbedSessionMode.Application,
       theme: 'dawn',
       prefersDark: 'system'
     },
@@ -214,8 +216,8 @@ export default function Home() {
             </div>
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600">
-                <strong>Note:</strong> In a real application, user information would come from your authentication system.
-                Each user gets their own unique embed URL with their specific permissions and data access.
+                <strong>Local demo only:</strong> These users and permissions are selected by the browser and are not authenticated.
+                A production app must derive this data from trusted server-side identity and authorization.
               </p>
             </div>
           </div>

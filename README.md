@@ -31,8 +31,8 @@ This is a simple web app built with Node.js and Next.js to demonstrate how Omni 
 If you just want to see it running, follow these steps:
 
 1. **Clone and install**: Download the code and run `npm install` to get everything set up.
-2. **Configure**: Copy `.env.example` to `.env` and add your Omni secret and organization name (see below).
-3. **Enter content IDs and connection ID**: Open `src/config/demo-ids.ts` and replace the placeholder values with your actual dashboard/workbook IDs, connection ID, and (optionally) custom theme ID from your Omni instance.
+2. **Configure**: Copy `env.example` to `.env` and add your Omni secret and organization name (see below).
+3. **Enter content IDs and connection ID**: Open `src/config/demo-ids.ts` and replace the placeholder values with your actual dashboard/workbook IDs and connection ID.
 4. **Run**: Start the app with `npm run dev` and open it in your browser.
 5. **Try it out**: Switch between users and dashboards to see how the analytics change for each one.
 
@@ -47,11 +47,13 @@ This demo shows how to implement Omni embeds in a multi-user application:
 1. **One embed URL per user** - Each user gets their own unique, signed URL
 2. **Server-side URL generation** - Secrets are never exposed to the client
 3. **User-specific permissions** - Pass user attributes for row-level security
-4. **Authentication integration** - Generate embed URLs based on your app's auth
+4. **Explicit demo trust boundary** - The local user picker is intentionally client-controlled; production code must supply identity and permissions from trusted server-side authentication and authorization
 
 ## 🚀 Quick Start
 
 This setup is for local development and experimentation. Treat the code, demo users, and diagnostic endpoints as example scaffolding, not production-ready application code.
+
+> **Trust boundary:** `/api/embed-url` signs the user and permission values sent by this demo's browser. There is no production authentication or authorization in this repository. Do not deploy it as-is. In a real application, ignore client-supplied identity/role data and construct the signing payload from a trusted server-side session and authorization policy.
 
 1. Clone the repository:
 ```bash
@@ -66,7 +68,7 @@ npm install
 
 3. Set up environment variables:
 ```bash
-cp .env.example .env
+cp env.example .env
 ```
 
 Edit `.env` with your Omni credentials (choose one domain type):
@@ -85,7 +87,7 @@ OMNI_ORGANIZATION_NAME=your-org-name
    - Replace `your-dashboard-id` with an actual dashboard ID
    - Replace `your-workbook-id` with an actual workbook ID
    - Replace `your-connection-id` with your database connection UUID
-   - Optionally set `CUSTOM_THEME_ID` to a theme UUID from Admin > Themes
+   - The custom-theme example uses inline SDK theme properties, so it works without an instance-specific theme UUID
 
 5. Run the development server:
 ```bash
@@ -122,7 +124,7 @@ This section explains how the core files in this project interact to securely ge
 
 | File | Purpose |
 |------|---------|
-| `src/config/demo-ids.ts` | **Start here.** Placeholder IDs for your dashboards, workbooks, connection, and theme. |
+| `src/config/demo-ids.ts` | **Start here.** Placeholder IDs for your dashboards, workbooks, and connection. |
 | `src/types/omni.ts` | TypeScript types for user, config, and error objects. |
 | `src/pages/index.tsx` | Main demo page for user/content selection. |
 | `src/components/OmniEmbed.tsx` | React component that fetches a signed embed URL and displays analytics in an iframe. Handles loading and error states. |
@@ -135,7 +137,7 @@ This section explains how the core files in this project interact to securely ge
 1. User visits the demo page (`index.tsx`).
 2. User selects a user and a dashboard/workbook.
 3. `OmniEmbed` receives the user/config, fetches a signed URL from `/api/embed-url`.
-4. `/api/embed-url` validates the request, calls `generateEmbedUrl` (in `omni-embed.ts`), and returns the signed URL.
+4. `/api/embed-url` validates the demo request shape, calls `generateEmbedUrl` (in `omni-embed.ts`), and returns the signed URL. This shape validation is not authentication.
 5. `OmniEmbed` displays the analytics in an iframe using the signed URL.
 6. If anything fails, the error boundary from `_app.tsx` catches it and shows a friendly error message.
 
@@ -162,12 +164,18 @@ This section explains how the core files in this project interact to securely ge
 
 ### Why This Matters
 
-- **Security:** All sensitive logic and secrets are kept server-side; only signed URLs are sent to the client.
+- **Secret handling:** The embed secret stays server-side and only signed URLs are sent to the client. The demo request itself is not authenticated, so its client-selected user and permissions are not a production security boundary.
 - **Flexibility:** Easily switch users/content to see how permissions and data access change.
 - **Type Safety:** TypeScript types ensure consistent, safe data handling.
 - **User Experience:** Loading and error states are handled gracefully.
 
 ## 🔍 Troubleshooting
+
+### SDK and signing format
+
+This demo pins `@omni-co/embed` 1.1.0. The standard `embedSsoDashboard`, `embedSsoWorkbook`, and `embedSsoContentDiscovery` builders generate v1 URLs with `payload`, `signature`, and `sdk` query parameters. JSON-valued settings such as user attributes, connection roles, and custom themes are passed to the SDK as objects rather than pre-stringified JSON.
+
+Every URL is minted on demand with an explicit five-minute (`expiresIn: 300`) lifetime, represented by an epoch-seconds `exp` value inside the signed payload rather than a mutable query parameter. Omni's pinned SDK documentation says the server currently requires `exp` to be present but does not guarantee rejection after it has passed, so this setting must not be treated as preventing URL reuse.
 
 ### Environment Validation
 Use the diagnostic endpoint to check your configuration during local development only:
@@ -251,7 +259,9 @@ function App() {
 
 ## 📖 Resources
 
-- [Omni Embed SDK Documentation](https://www.npmjs.com/package/@omni-co/embed)
+- [Omni standard SSO v1 setup](https://docs.omni.co/embed/setup/standard-sso/latest)
+- [Omni v1 migration guide](https://docs.omni.co/embed/setup/standard-sso/migrate-to-latest)
+- [Omni Embed SDK package](https://www.npmjs.com/package/@omni-co/embed)
 - [Omni Documentation](https://docs.omni.co)
 
 ## 🤝 Contributing
