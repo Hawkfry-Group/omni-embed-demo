@@ -87,18 +87,17 @@ const EMBED_CONFIGS: { name: string; config: OmniEmbedConfig }[] = [
     config: {
       contentType: 'dashboard',
       contentId: CUSTOM_THEME_DASHBOARD_ID,
-      customThemeId: CUSTOM_THEME_ID, // Option 1: reference a saved theme by ID (Admin > Themes)
+      customThemeId: CUSTOM_THEME_ID,
       accessBoost: true, // Enable access boost for this dashboard
       prefersDark: 'true'
-      // Option 2: define the theme inline instead of using an ID (remove customThemeId above and import CustomThemeProperty from '@omni-co/embed')
       // ,customTheme: {
-      //   [CustomThemeProperty.DASHBOARD_BACKGROUND]: '#eff6ff',
-      //   [CustomThemeProperty.DASHBOARD_TILE_BACKGROUND]: '#ffffff',
-      //   [CustomThemeProperty.DASHBOARD_TILE_BORDER_COLOR]: '#bfdbfe',
-      //   [CustomThemeProperty.DASHBOARD_TILE_BORDER_RADIUS]: '12px',
-      //   [CustomThemeProperty.DASHBOARD_TILE_TITLE_TEXT_COLOR]: '#1d4ed8',
-      //   [CustomThemeProperty.DASHBOARD_KEY_COLOR]: '#2563eb',
-      //   [CustomThemeProperty.DASHBOARD_KEY_TEXT_COLOR]: '#ffffff',
+      //   "dashboard-background": "#2563eb",
+      //   "dashboard-tile-title-font-family": "url(https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.ttf)",
+      //   "dashboard-tile-subtitle-font-family": "url(https://fonts.gstatic.com/s/opensans/v34/memvYaGs126MiZpBA-UvWbX2vVnXBbObj2OVTS-muw.ttf)",
+      //   "dashboard-tile-value-font-family": "url(https://fonts.gstatic.com/s/montserrat/v25/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw5aXp-p7K4KLg.ttf)",
+      //   "dashboard-tile-title-font-size": "16px",
+      //   "dashboard-tile-subtitle-font-size": "14px",
+      //   "dashboard-tile-value-font-size": "24px"
       // }
     },
   },
