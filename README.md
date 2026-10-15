@@ -32,7 +32,7 @@ If you just want to see it running, follow these steps:
 
 1. **Clone and install**: Download the code and run `npm install` to get everything set up.
 2. **Configure**: Copy `env.example` to `.env` and add your Omni secret and organization name (see below).
-3. **Enter content IDs and connection ID**: Open `src/config/demo-ids.ts` and replace the placeholder values with your actual dashboard/workbook IDs and connection ID.
+3. **Enter content IDs and connection ID**: Open `src/config/demo-ids.ts` and replace the placeholder values with your actual dashboard/workbook IDs, connection ID, and (optionally) custom theme ID from your Omni instance.
 4. **Run**: Start the app with `npm run dev` and open it in your browser.
 5. **Try it out**: Switch between users and dashboards to see how the analytics change for each one.
 
@@ -87,7 +87,7 @@ OMNI_ORGANIZATION_NAME=your-org-name
    - Replace `your-dashboard-id` with an actual dashboard ID
    - Replace `your-workbook-id` with an actual workbook ID
    - Replace `your-connection-id` with your database connection UUID
-   - The custom-theme example uses inline SDK theme properties, so it works without an instance-specific theme UUID
+   - Optionally set `CUSTOM_THEME_ID` to a theme UUID from Admin > Themes (or use the commented-out inline `customTheme` option in `src/pages/index.tsx` instead)
 
 5. Run the development server:
 ```bash
@@ -124,7 +124,7 @@ This section explains how the core files in this project interact to securely ge
 
 | File | Purpose |
 |------|---------|
-| `src/config/demo-ids.ts` | **Start here.** Placeholder IDs for your dashboards, workbooks, and connection. |
+| `src/config/demo-ids.ts` | **Start here.** Placeholder IDs for your dashboards, workbooks, connection, and theme. |
 | `src/types/omni.ts` | TypeScript types for user, config, and error objects. |
 | `src/pages/index.tsx` | Main demo page for user/content selection. |
 | `src/components/OmniEmbed.tsx` | React component that fetches a signed embed URL and displays analytics in an iframe. Handles loading and error states. |
